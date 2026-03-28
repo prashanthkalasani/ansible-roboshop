@@ -1,0 +1,25 @@
+- name: create ec2 and r53
+  hosts: local
+  connection: local
+  vars:
+    ami_id: ami-0220d79f3f480ecf5
+    sg_id: sg-0e035f85a4e2053f7 # replace with your SG ID
+    zone_id: "Z0295247D3PT882LFGKC" # replace with your ID
+    domain_name: "dpspk142034.fun"
+    instances:
+    - mongodb
+  tasks:
+  - name: create ec2 instance
+    amazon.aws.ec2_instance:
+      name: "{{ item }}"
+      instance_type: t3.micro
+      security_group: "{{ sg_id }}"
+      image_id: "{{ ami_id }}"
+      tags:
+        Name: "{{ item }}"
+    loop: "{{ instances }}"
+    register: ec2_output
+
+  - name: print the ec2_output
+    ansible.builtin.debug:
+      msg: "{{ ec2_output }}"
